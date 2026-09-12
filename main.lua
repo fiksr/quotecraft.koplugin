@@ -19,7 +19,7 @@ local CardView = dofile(plugin_dir .. "cardview.lua")
 local function addToMenuOrder(module_path, section, name)
     local ok, order = pcall(require, module_path)
     if ok and order and order[section] then
-        for _, v in ipairs(order[section]) do
+        for i, v in ipairs(order[section]) do
             if v == name then return end
         end
         table.insert(order[section], name)
