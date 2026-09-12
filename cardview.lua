@@ -29,6 +29,8 @@ local Exporter = require("exporter")
 
 local CardView = InputContainer:extend{
     name = "quotecraft_card_view",
+    is_modal = true,
+    covers_fullscreen = true,
     text = "",
     book_title = "Untitled",
     book_author = "Unknown Author",
@@ -354,7 +356,7 @@ function CardView:buildView()
     }
 
     local btn_save = Button:new{
-        text = "💾 Save PNG",
+        text = "💾 Save",
         callback = function()
             Exporter.saveCard(self, false)
         end,
@@ -363,7 +365,7 @@ function CardView:buildView()
     }
 
     local btn_wallpaper = Button:new{
-        text = "🖼️ Set Lockscreen",
+        text = "🖼️ Wallpaper",
         callback = function()
             Exporter.saveCard(self, true)
         end,
@@ -392,13 +394,13 @@ function CardView:buildView()
     local toolbar = HorizontalGroup:new{
         align = "center",
         btn_theme,
-        HorizontalSpan:new{ width = 10 },
+        HorizontalSpan:new{ width = 6 },
         btn_save,
-        HorizontalSpan:new{ width = 10 },
+        HorizontalSpan:new{ width = 6 },
         btn_wallpaper,
-        HorizontalSpan:new{ width = 10 },
+        HorizontalSpan:new{ width = 6 },
         btn_copy,
-        HorizontalSpan:new{ width = 10 },
+        HorizontalSpan:new{ width = 6 },
         btn_close,
     }
 
@@ -406,29 +408,37 @@ function CardView:buildView()
         width = screen_w,
         background = bg_color,
         bordersize = 0,
-        padding = 10,
+        padding = 4,
         margin = 0,
         CenterContainer:new{
-            dimen = Geom:new{ w = screen_w, h = 60 },
+            dimen = Geom:new{ w = screen_w, h = 56 },
             toolbar,
         },
     }
 
-    local full_layout = VerticalGroup:new{
+    self[1] = VerticalGroup:new{
         align = "center",
         centered_card,
         self.toolbar_widget,
     }
+end
 
-    self[1] = FrameContainer:new{
-        width = screen_w,
-        height = screen_h,
-        background = bg_color,
-        bordersize = 0,
-        padding = 0,
-        margin = 0,
-        full_layout,
-    }
+function CardView:onShow()
+    UIManager:setDirty(self, function()
+        return "full", Geom:new{ x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight() }, true
+    end)
+    return true
+end
+
+function CardView:paintTo(bb, x, y)
+    local screen_w = Screen:getWidth()
+    local screen_h = Screen:getHeight()
+    local is_dark = (self.theme == "dark")
+    local bg_color = is_dark and Blitbuffer.COLOR_BLACK or Blitbuffer.COLOR_WHITE
+    bb:paintRect(0, 0, screen_w, screen_h, bg_color)
+    if self[1] then
+        self[1]:paintTo(bb, x, y)
+    end
 end
 
 function CardView:onCycleTheme()

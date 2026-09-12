@@ -58,8 +58,8 @@ local function splitTitleAndAuthor(raw_title, raw_author)
 end
 
 function QuoteCraft:addToHighlightDialog()
-    -- 12_quotecraft places our button right inside the highlight action popup
-    self.ui.highlight:addToHighlightDialog("12_quotecraft", function(this)
+    -- 00_quotecraft places our button right at the top of the highlight action popup
+    self.ui.highlight:addToHighlightDialog("00_quotecraft", function(this)
         return {
             text = _("Create Quote Card"),
             callback = function()
@@ -140,7 +140,6 @@ end
 function QuoteCraft:addToMainMenu(menu_items)
     menu_items.quotecraft = {
         text = _("QuoteCraft"),
-        sorting_hint = "more_tools",
         sub_item_table = self:getSubMenuItems(),
     }
 end
