@@ -178,7 +178,8 @@ function QuoteCraft:addToMainMenu(menu_items)
             return self:getSubMenuItems()
         end,
         sub_item_table = self:getSubMenuItems(),
-    } end
+    }
+end
 
 function QuoteCraft:getSubMenuItems()
     return {
