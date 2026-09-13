@@ -4,6 +4,7 @@ Generates beautiful typographic quote cards from highlights with high-res PNG ex
 --]]--
 
 local Device = require("device")
+local Dispatcher = require("dispatcher")
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
@@ -32,6 +33,26 @@ local QuoteCraft = WidgetContainer:extend{
     name = "quotecraft",
     is_doc_only = false,
 }
+
+
+function QuoteCraft:onDispatcherRegisterActions()
+    Dispatcher:registerAction("quotecraft", {
+        category = "none",
+        event = "ShowQuoteCraft",
+        title = _("QuoteCraft"),
+        general = true,
+    })
+end
+
+function QuoteCraft:onShowQuoteCraft()
+    local Menu = require("ui/widget/menu")
+    local menu = Menu:new{
+        title = _("QuoteCraft"),
+        item_table = self:getSubMenuItems(),
+        is_borderless = true,
+    }
+    UIManager:show(menu)
+end
 
 function QuoteCraft:init()
     self.settings = Settings:new()
