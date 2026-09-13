@@ -14,9 +14,9 @@ local Exporter = {}
 
 -- Clean a string to make it safe for filenames
 local function sanitizeFilename(str)
-    if not str or #str == 0 then return "quote" end
+    if not str or #str == 0 then return "quote"end
     local clean = str:gsub("[^%w%-_]", "_"):gsub("_+", "_"):gsub("^_+", ""):gsub("_+$", "")
-    if #clean == 0 then clean = "quote" end
+    if #clean == 0 then clean = "quote"end
     if #clean > 25 then clean = clean:sub(1, 25) end
     return clean
 end
@@ -28,7 +28,7 @@ function Exporter.saveCard(card_view, is_wallpaper)
     local safe_title = sanitizeFilename(card_view.book_title)
     local date_str = os.date("%Y%m%d_%H%M%S")
     local filename = string.format("Quote_%s_%s.png", safe_title, date_str)
-    local filepath = export_dir .. "/" .. filename
+    local filepath = export_dir .. "/".. filename
 
     -- Temporarily hide the interactive action toolbar so the saved card is 100% pristine
     if card_view.toolbar_widget then
@@ -64,12 +64,12 @@ function Exporter.saveCard(card_view, is_wallpaper)
             G_reader_settings:saveSetting("screensaver_document_cover", filepath)
         end
         UIManager:show(InfoMessage:new{
-            text = string.format(_("🖼️ Set as Lockscreen Wallpaper!\n\nSaved to:\n%s"), filepath),
+            text = string.format(_("️ Set as Lockscreen Wallpaper!\n\nSaved to:\n%s"), filepath),
             timeout = 4,
         })
     else
         UIManager:show(InfoMessage:new{
-            text = string.format(_("💾 Quote Card Saved!\n\n%s"), filepath),
+            text = string.format(_("Quote Card Saved!\n\n%s"), filepath),
             timeout = 3,
         })
     end

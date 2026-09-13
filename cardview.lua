@@ -92,7 +92,7 @@ function CardView:buildView()
 
     local card_items = {}
 
-    if self.theme == "classic" then
+    if self.theme == "classic"then
         -- THEME 1: Classic Literary (Serif, curly quotes, elegant rule)
         table.insert(card_items, TextWidget:new{
             text = "“",
@@ -122,7 +122,7 @@ function CardView:buildView()
         local cite_items = {
             align = "left",
             TextWidget:new{
-                text = "— " .. self.book_title,
+                text = "— ".. self.book_title,
                 face = Font:getFace("cfont", 20),
                 bold = true,
                 fgcolor = fg_color,
@@ -132,7 +132,7 @@ function CardView:buildView()
         if self.book_author and #self.book_author > 0 then
             table.insert(cite_items, VerticalSpan:new{ width = 4 })
             table.insert(cite_items, TextWidget:new{
-                text = "by " .. self.book_author,
+                text = "by ".. self.book_author,
                 face = Font:getFace("cfont", 16),
                 italic = true,
                 fgcolor = dim_color,
@@ -150,7 +150,7 @@ function CardView:buildView()
         if #meta_parts > 0 then
             table.insert(cite_items, VerticalSpan:new{ width = 4 })
             table.insert(cite_items, TextWidget:new{
-                text = table.concat(meta_parts, "  •  "),
+                text = table.concat(meta_parts, "•  "),
                 face = Font:getFace("cfont", 13),
                 fgcolor = dim_color,
                 max_width = content_w - 100,
@@ -180,7 +180,7 @@ function CardView:buildView()
             table.insert(card_items, cite_col)
         end
 
-    elseif self.theme == "modern" then
+    elseif self.theme == "modern"then
         -- THEME 2: Modern Minimal (Left accent line, crisp sans-serif)
         local quote_box = TextBoxWidget:new{
             text = self.text,
@@ -210,10 +210,10 @@ function CardView:buildView()
 
         local meta_line = self.book_title
         if self.book_author and #self.book_author > 0 then
-            meta_line = meta_line .. "  •  " .. self.book_author
+            meta_line = meta_line .. "•  ".. self.book_author
         end
         if self.page_str and #self.page_str > 0 then
-            meta_line = meta_line .. "  (" .. self.page_str .. ")"
+            meta_line = meta_line .. "(".. self.page_str .. ")"
         end
         table.insert(card_items, TextWidget:new{
             text = meta_line,
@@ -223,7 +223,7 @@ function CardView:buildView()
             max_width = content_w,
         })
 
-    elseif self.theme == "bookplate" then
+    elseif self.theme == "bookplate"then
         -- THEME 3: Vintage Bookplate (Double frame border, centered layout)
         table.insert(card_items, TextWidget:new{
             text = "“",
@@ -260,7 +260,7 @@ function CardView:buildView()
         if self.book_author and #self.book_author > 0 then
             table.insert(card_items, VerticalSpan:new{ width = 4 })
             table.insert(card_items, TextWidget:new{
-                text = "by " .. self.book_author,
+                text = "by ".. self.book_author,
                 face = Font:getFace("cfont", 16),
                 italic = true,
                 fgcolor = dim_color,
@@ -295,7 +295,7 @@ function CardView:buildView()
         table.insert(card_items, VerticalSpan:new{ width = 12 })
 
         table.insert(card_items, TextWidget:new{
-            text = "— " .. self.book_title,
+            text = "— ".. self.book_title,
             face = Font:getFace("cfont", 19),
             bold = true,
             fgcolor = fg_color,
@@ -304,7 +304,7 @@ function CardView:buildView()
         if self.book_author and #self.book_author > 0 then
             table.insert(card_items, VerticalSpan:new{ width = 4 })
             table.insert(card_items, TextWidget:new{
-                text = "by " .. self.book_author,
+                text = "by ".. self.book_author,
                 face = Font:getFace("cfont", 15),
                 italic = true,
                 fgcolor = dim_color,
@@ -317,7 +317,7 @@ function CardView:buildView()
 
     -- Wrap in card container with border if bookplate
     local card_container
-    if self.theme == "bookplate" then
+    if self.theme == "bookplate"then
         card_container = FrameContainer:new{
             width = content_w + 30,
             background = bg_color,
@@ -347,7 +347,7 @@ function CardView:buildView()
     -- Interactive Bottom Action Toolbar
     local theme_name = self.settings and self.settings:getThemeName(self.theme) or "Classic"
     local btn_theme = Button:new{
-        text = "🎨 " .. theme_name,
+        text = "".. theme_name,
         callback = function()
             self:onCycleTheme()
         end,
@@ -356,7 +356,7 @@ function CardView:buildView()
     }
 
     local btn_save = Button:new{
-        text = "💾 Save",
+        text = "Save",
         callback = function()
             Exporter.saveCard(self, false)
         end,
@@ -365,7 +365,7 @@ function CardView:buildView()
     }
 
     local btn_wallpaper = Button:new{
-        text = "🖼️ Wallpaper",
+        text = "️ Wallpaper",
         callback = function()
             Exporter.saveCard(self, true)
         end,
@@ -374,7 +374,7 @@ function CardView:buildView()
     }
 
     local btn_copy = Button:new{
-        text = "📋 Copy",
+        text = "Copy",
         callback = function()
             self:onCopyText()
         end,
@@ -383,7 +383,7 @@ function CardView:buildView()
     }
 
     local btn_close = Button:new{
-        text = "✕ Close",
+        text = "Close",
         callback = function()
             UIManager:close(self)
         end,
@@ -450,12 +450,12 @@ function CardView:onCycleTheme()
 end
 
 function CardView:onCopyText()
-    local citation = "— " .. self.book_title
+    local citation = "— ".. self.book_title
     if self.book_author and #self.book_author > 0 then
-        citation = citation .. ", by " .. self.book_author
+        citation = citation .. ", by ".. self.book_author
     end
     if self.page_str and #self.page_str > 0 then
-        citation = citation .. " (" .. self.page_str .. ")"
+        citation = citation .. "(".. self.page_str .. ")"
     end
     local full_quote = string.format("“%s”\n\n%s", self.text, citation)
 

@@ -10,7 +10,7 @@ local util = require("util")
 local Settings = {}
 Settings.__index = Settings
 
-local THEMES = { "classic", "modern", "bookplate", "dark" }
+local THEMES = { "classic", "modern", "bookplate", "dark"}
 
 local THEME_NAMES = {
     classic = "Classic Literary",
@@ -27,14 +27,14 @@ end
 
 function Settings:get(key, default)
     if not G_reader_settings then return default end
-    local val = G_reader_settings:readSetting("quotecraft_" .. key)
+    local val = G_reader_settings:readSetting("quotecraft_".. key)
     if val ~= nil then return val end
     return default
 end
 
 function Settings:save(key, val)
     if not G_reader_settings then return end
-    G_reader_settings:saveSetting("quotecraft_" .. key, val)
+    G_reader_settings:saveSetting("quotecraft_".. key, val)
 end
 
 function Settings:getTheme()
@@ -69,7 +69,7 @@ function Settings:getExportDir()
     end
 
     -- Prefer /mnt/us/quotes on Kindle for easy USB/WebDAV access
-    if lfs.attributes("/mnt/us", "mode") == "directory" then
+    if lfs.attributes("/mnt/us", "mode") == "directory"then
         return "/mnt/us/quotes"
     end
 

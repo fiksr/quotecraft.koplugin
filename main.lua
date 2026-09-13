@@ -39,7 +39,7 @@ function QuoteCraft:onDispatcherRegisterActions()
     Dispatcher:registerAction("quotecraft", {
         category = "none",
         event = "ShowQuoteCraft",
-        title = _("💬 QuoteCraft"),
+        title = _("QuoteCraft"),
         general = true,
     })
 end
@@ -47,7 +47,7 @@ end
 function QuoteCraft:onShowQuoteCraft()
     local Menu = require("ui/widget/menu")
     local menu = Menu:new{
-        title = _("💬 QuoteCraft"),
+        title = _("QuoteCraft"),
         item_table = self:getSubMenuItems(),
         is_borderless = true,
     }
@@ -80,7 +80,7 @@ local function splitTitleAndAuthor(raw_title, raw_author)
     local t_part, a_part = title:match("^(.-)%s+[%-–—]%s+(.+)$")
     if t_part and a_part and #t_part > 0 and #a_part > 0 then
         title = t_part
-        if not author or author == "" or author:lower():find(a_part:lower(), 1, true) or a_part:lower():find(author:lower(), 1, true) then
+        if not author or author == ""or author:lower():find(a_part:lower(), 1, true) or a_part:lower():find(author:lower(), 1, true) then
             author = a_part
         end
     end
@@ -129,7 +129,7 @@ function QuoteCraft:openQuoteCard(text)
     if self.ui and self.ui.toc and self.ui.toc.getTocTitleOfCurrentPage then
         local ok_ct, ct = pcall(function() return self.ui.toc:getTocTitleOfCurrentPage() end)
         if ok_ct and ct and #ct > 0 then
-            chapter_title = ct:gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+            chapter_title = ct:gsub("[\r\n]+", ""):gsub("^%s+", ""):gsub("%s+$", "")
         end
     end
 
@@ -173,7 +173,7 @@ end
 
 function QuoteCraft:addToMainMenu(menu_items)
     menu_items.quotecraft = {
-        text = _("💬 QuoteCraft"),
+        text = _("QuoteCraft"),
         sorting_hint = "more_tools",
         sub_item_table_func = function()
             return self:getSubMenuItems()
@@ -185,7 +185,7 @@ end
 function QuoteCraft:getSubMenuItems()
     return {
         {
-            text = _("📁 Browse Saved Quotes"),
+            text = _("Browse Saved Quotes"),
             callback = function()
                 local dir = self.settings:getExportDir()
                 local FileManager = require("apps/filemanager/filemanager")
@@ -194,7 +194,7 @@ function QuoteCraft:getSubMenuItems()
         },
         {
             text_func = function()
-                return string.format(_("🎨 Default Style: %s"), self.settings:getThemeName())
+                return string.format(_("Default Style: %s"), self.settings:getThemeName())
             end,
             callback = function()
                 self.settings:nextTheme()
@@ -205,7 +205,7 @@ function QuoteCraft:getSubMenuItems()
             end,
         },
         {
-            text = _("🖼️ Include Book Cover in Cards"),
+            text = _("️ Include Book Cover in Cards"),
             checked_func = function()
                 return self.settings:includeCover()
             end,
@@ -214,7 +214,7 @@ function QuoteCraft:getSubMenuItems()
             end,
         },
         {
-            text = _("📖 Include Chapter & Page"),
+            text = _("Include Chapter & Page"),
             checked_func = function()
                 return self.settings:includeCitation()
             end,
