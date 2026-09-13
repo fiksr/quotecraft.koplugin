@@ -69,7 +69,7 @@ function Settings:getExportDir()
     end
 
     -- Prefer /mnt/us/quotes on Kindle for easy USB/WebDAV access
-    if lfs.attributes("/mnt/us", "mode") == "directory"then
+    if lfs.attributes("/mnt/us", "mode") == "directory" then
         return "/mnt/us/quotes"
     end
 

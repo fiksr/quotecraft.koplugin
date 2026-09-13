@@ -47,13 +47,11 @@ function CardView:init()
     self.dimen = Geom:new{ x = 0, y = 0, w = screen_w, h = screen_h }
 
     if Device:hasKeys() then
-        self.key_events.AnyKeyPressed = { { Device.input.group.Any } }
-    end
+        self.key_events.AnyKeyPressed = { { Device.input.group.Any } } end
     if Device:isTouchDevice() then
         self.ges_events.Swipe = {
             GestureRange:new{ ges = "swipe", range = Geom:new{ x = 0, y = 0, w = screen_w, h = screen_h } }
-        }
-    end
+        } end
 
     if self.settings then
         self.theme = self.settings:getTheme()
@@ -92,7 +90,7 @@ function CardView:buildView()
 
     local card_items = {}
 
-    if self.theme == "classic"then
+    if self.theme == "classic" then
         -- THEME 1: Classic Literary (Serif, curly quotes, elegant rule)
         table.insert(card_items, TextWidget:new{
             text = "“",
@@ -180,7 +178,7 @@ function CardView:buildView()
             table.insert(card_items, cite_col)
         end
 
-    elseif self.theme == "modern"then
+    elseif self.theme == "modern" then
         -- THEME 2: Modern Minimal (Left accent line, crisp sans-serif)
         local quote_box = TextBoxWidget:new{
             text = self.text,
@@ -223,7 +221,7 @@ function CardView:buildView()
             max_width = content_w,
         })
 
-    elseif self.theme == "bookplate"then
+    elseif self.theme == "bookplate" then
         -- THEME 3: Vintage Bookplate (Double frame border, centered layout)
         table.insert(card_items, TextWidget:new{
             text = "“",
@@ -317,7 +315,7 @@ function CardView:buildView()
 
     -- Wrap in card container with border if bookplate
     local card_container
-    if self.theme == "bookplate"then
+    if self.theme == "bookplate" then
         card_container = FrameContainer:new{
             width = content_w + 30,
             background = bg_color,
@@ -335,8 +333,7 @@ function CardView:buildView()
             padding = 0,
             margin = 0,
             card_inner,
-        }
-    end
+        } end
 
     -- Centered card presentation on screen
     local centered_card = CenterContainer:new{
@@ -420,8 +417,7 @@ function CardView:buildView()
         align = "center",
         centered_card,
         self.toolbar_widget,
-    }
-end
+    } end
 
 function CardView:onShow()
     UIManager:setDirty(self, function()

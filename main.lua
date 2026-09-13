@@ -80,7 +80,7 @@ local function splitTitleAndAuthor(raw_title, raw_author)
     local t_part, a_part = title:match("^(.-)%s+[%-–—]%s+(.+)$")
     if t_part and a_part and #t_part > 0 and #a_part > 0 then
         title = t_part
-        if not author or author == ""or author:lower():find(a_part:lower(), 1, true) or a_part:lower():find(author:lower(), 1, true) then
+        if not author or author == "" or author:lower():find(a_part:lower(), 1, true) or a_part:lower():find(author:lower(), 1, true) then
             author = a_part
         end
     end
@@ -112,8 +112,7 @@ function QuoteCraft:addToHighlightDialog()
                 this:onClose(true)
                 self:openQuoteCard(text)
             end,
-        }
-    end)
+        } end)
 end
 
 function QuoteCraft:openQuoteCard(text)
@@ -179,8 +178,7 @@ function QuoteCraft:addToMainMenu(menu_items)
             return self:getSubMenuItems()
         end,
         sub_item_table = self:getSubMenuItems(),
-    }
-end
+    } end
 
 function QuoteCraft:getSubMenuItems()
     return {
@@ -222,7 +220,6 @@ function QuoteCraft:getSubMenuItems()
                 self.settings:save("include_citation", not self.settings:includeCitation())
             end,
         },
-    }
-end
+    } end
 
 return QuoteCraft

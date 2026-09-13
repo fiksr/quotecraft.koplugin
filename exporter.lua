@@ -14,9 +14,9 @@ local Exporter = {}
 
 -- Clean a string to make it safe for filenames
 local function sanitizeFilename(str)
-    if not str or #str == 0 then return "quote"end
+    if not str or #str == 0 then return "quote" end
     local clean = str:gsub("[^%w%-_]", "_"):gsub("_+", "_"):gsub("^_+", ""):gsub("_+$", "")
-    if #clean == 0 then clean = "quote"end
+    if #clean == 0 then clean = "quote" end
     if #clean > 25 then clean = clean:sub(1, 25) end
     return clean
 end
