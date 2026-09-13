@@ -39,7 +39,7 @@ function QuoteCraft:onDispatcherRegisterActions()
     Dispatcher:registerAction("quotecraft", {
         category = "none",
         event = "ShowQuoteCraft",
-        title = _("QuoteCraft"),
+        title = _("💬 QuoteCraft"),
         general = true,
     })
 end
@@ -47,7 +47,7 @@ end
 function QuoteCraft:onShowQuoteCraft()
     local Menu = require("ui/widget/menu")
     local menu = Menu:new{
-        title = _("QuoteCraft"),
+        title = _("💬 QuoteCraft"),
         item_table = self:getSubMenuItems(),
         is_borderless = true,
     }
@@ -173,7 +173,7 @@ end
 
 function QuoteCraft:addToMainMenu(menu_items)
     menu_items.quotecraft = {
-        text = _("QuoteCraft"),
+        text = _("💬 QuoteCraft"),
         sorting_hint = "more_tools",
         sub_item_table_func = function()
             return self:getSubMenuItems()
