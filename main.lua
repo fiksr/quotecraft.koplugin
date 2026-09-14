@@ -204,7 +204,7 @@ function QuoteCraft:getSubMenuItems()
             end,
         },
         {
-            text = _("️ Include Book Cover in Cards"),
+            text = _("Include Book Cover in Cards"),
             checked_func = function()
                 return self.settings:includeCover()
             end,

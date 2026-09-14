@@ -47,11 +47,13 @@ function CardView:init()
     self.dimen = Geom:new{ x = 0, y = 0, w = screen_w, h = screen_h }
 
     if Device:hasKeys() then
-        self.key_events.AnyKeyPressed = { { Device.input.group.Any } } end
+        self.key_events.AnyKeyPressed = { { Device.input.group.Any } }
+    end
     if Device:isTouchDevice() then
         self.ges_events.Swipe = {
             GestureRange:new{ ges = "swipe", range = Geom:new{ x = 0, y = 0, w = screen_w, h = screen_h } }
-        } end
+        }
+    end
 
     if self.settings then
         self.theme = self.settings:getTheme()
@@ -63,15 +65,15 @@ end
 -- Calculate dynamic font size based on quote length
 local function getOptimalFontSize(text_len)
     if text_len <= 80 then
-        return 28
+        return 32
     elseif text_len <= 180 then
-        return 24
+        return 28
     elseif text_len <= 350 then
-        return 20
+        return 24
     elseif text_len <= 600 then
-        return 17
+        return 20
     else
-        return 15
+        return 17
     end
 end
 
@@ -85,18 +87,50 @@ function CardView:buildView()
     local dim_color = is_dark and Blitbuffer.COLOR_LIGHT_GRAY or Blitbuffer.COLOR_DARK_GRAY
     local line_color = is_dark and Blitbuffer.COLOR_GRAY or Blitbuffer.COLOR_DARK_GRAY
 
-    local content_w = screen_w - 80
+    local content_w = math.min(screen_w - 90, 960)
     local font_size = getOptimalFontSize(#self.text)
+
+    local has_cover = (self.cover_bb ~= nil and self.settings and self.settings:includeCover())
+    local thumb_w = math.max(96, math.floor(screen_w * 0.14))
+    local thumb_h = math.floor(thumb_w * 1.48)
+    local text_col_w = has_cover and (content_w - thumb_w - 24) or content_w
+
+    local framed_thumb = nil
+    if has_cover then
+        local thumb = ImageWidget:new{
+            image = self.cover_bb,
+            image_disposable = false,
+            width = thumb_w,
+            height = thumb_h,
+            scale_factor = 0,
+        }
+        framed_thumb = FrameContainer:new{
+            bordersize = 1,
+            color = line_color,
+            background = bg_color,
+            padding = 2,
+            margin = 0,
+            thumb,
+        }
+    end
+
+    local meta_parts = {}
+    if self.chapter_title and #self.chapter_title > 0 then
+        table.insert(meta_parts, self.chapter_title)
+    end
+    if self.page_str and #self.page_str > 0 then
+        table.insert(meta_parts, self.page_str)
+    end
 
     local card_items = {}
 
     if self.theme == "classic" then
-        -- THEME 1: Classic Literary (Serif, curly quotes, elegant rule)
+        -- THEME 1: Classic Literary (Serif, curly quotes, elegant rule, balanced framed cover)
         table.insert(card_items, TextWidget:new{
             text = "“",
-            face = Font:getFace("cfont", 38),
+            face = Font:getFace("cfont", 44),
             bold = true,
-            fgcolor = fg_color,
+            fgcolor = dim_color,
         })
         table.insert(card_items, VerticalSpan:new{ width = 6 })
 
@@ -109,69 +143,53 @@ function CardView:buildView()
             alignment = "left",
         })
 
-        table.insert(card_items, VerticalSpan:new{ width = 16 })
+        table.insert(card_items, VerticalSpan:new{ width = 20 })
         table.insert(card_items, LineWidget:new{
             background = line_color,
             dimen = Geom:new{ w = content_w, h = 1 },
         })
-        table.insert(card_items, VerticalSpan:new{ width = 14 })
+        table.insert(card_items, VerticalSpan:new{ width = 16 })
 
         -- Citation Block
         local cite_items = {
             align = "left",
             TextWidget:new{
-                text = "— ".. self.book_title,
-                face = Font:getFace("cfont", 20),
+                text = "— " .. self.book_title,
+                face = Font:getFace("cfont", 22),
                 bold = true,
                 fgcolor = fg_color,
-                max_width = content_w - 100,
+                max_width = text_col_w,
             },
         }
         if self.book_author and #self.book_author > 0 then
             table.insert(cite_items, VerticalSpan:new{ width = 4 })
             table.insert(cite_items, TextWidget:new{
-                text = "by ".. self.book_author,
-                face = Font:getFace("cfont", 16),
+                text = "by " .. self.book_author,
+                face = Font:getFace("cfont", 17),
                 italic = true,
                 fgcolor = dim_color,
-                max_width = content_w - 100,
+                max_width = text_col_w,
             })
         end
 
-        local meta_parts = {}
-        if self.chapter_title and #self.chapter_title > 0 then
-            table.insert(meta_parts, self.chapter_title)
-        end
-        if self.page_str and #self.page_str > 0 then
-            table.insert(meta_parts, self.page_str)
-        end
         if #meta_parts > 0 then
-            table.insert(cite_items, VerticalSpan:new{ width = 4 })
+            table.insert(cite_items, VerticalSpan:new{ width = 6 })
             table.insert(cite_items, TextWidget:new{
-                text = table.concat(meta_parts, "•  "),
+                text = table.concat(meta_parts, "  •  "),
                 face = Font:getFace("cfont", 13),
                 fgcolor = dim_color,
-                max_width = content_w - 100,
+                max_width = text_col_w,
             })
         end
 
         local cite_col = VerticalGroup:new(cite_items)
 
-        -- Optional book cover thumbnail beside citation
-        if self.cover_bb and self.settings and self.settings:includeCover() then
-            local thumb_w = 70
-            local thumb_h = 100
-            local thumb = ImageWidget:new{
-                image = self.cover_bb,
-                width = thumb_w,
-                height = thumb_h,
-                scale_factor = 0,
-            }
+        if has_cover and framed_thumb then
             local cite_row = HorizontalGroup:new{
                 align = "center",
                 cite_col,
-                HorizontalSpan:new{ width = 20 },
-                thumb,
+                HorizontalSpan:new{ width = 24 },
+                framed_thumb,
             }
             table.insert(card_items, cite_row)
         else
@@ -179,7 +197,7 @@ function CardView:buildView()
         end
 
     elseif self.theme == "modern" then
-        -- THEME 2: Modern Minimal (Left accent line, crisp sans-serif)
+        -- THEME 2: Modern Minimal (Left accent line, crisp typography)
         local quote_box = TextBoxWidget:new{
             text = self.text,
             face = Font:getFace("cfont", font_size),
@@ -204,28 +222,55 @@ function CardView:buildView()
             background = line_color,
             dimen = Geom:new{ w = content_w, h = 1 },
         })
-        table.insert(card_items, VerticalSpan:new{ width = 12 })
+        table.insert(card_items, VerticalSpan:new{ width = 14 })
 
-        local meta_line = self.book_title
+        local cite_items = {
+            align = "left",
+            TextWidget:new{
+                text = self.book_title,
+                face = Font:getFace("cfont", 20),
+                bold = true,
+                fgcolor = fg_color,
+                max_width = text_col_w,
+            },
+        }
         if self.book_author and #self.book_author > 0 then
-            meta_line = meta_line .. "•  ".. self.book_author
+            table.insert(cite_items, VerticalSpan:new{ width = 4 })
+            table.insert(cite_items, TextWidget:new{
+                text = "by " .. self.book_author,
+                face = Font:getFace("cfont", 16),
+                fgcolor = dim_color,
+                max_width = text_col_w,
+            })
         end
-        if self.page_str and #self.page_str > 0 then
-            meta_line = meta_line .. "(".. self.page_str .. ")"
+        if #meta_parts > 0 then
+            table.insert(cite_items, VerticalSpan:new{ width = 4 })
+            table.insert(cite_items, TextWidget:new{
+                text = table.concat(meta_parts, "  •  "),
+                face = Font:getFace("cfont", 13),
+                fgcolor = dim_color,
+                max_width = text_col_w,
+            })
         end
-        table.insert(card_items, TextWidget:new{
-            text = meta_line,
-            face = Font:getFace("cfont", 15),
-            bold = true,
-            fgcolor = fg_color,
-            max_width = content_w,
-        })
+
+        local cite_col = VerticalGroup:new(cite_items)
+        if has_cover and framed_thumb then
+            local cite_row = HorizontalGroup:new{
+                align = "center",
+                cite_col,
+                HorizontalSpan:new{ width = 24 },
+                framed_thumb,
+            }
+            table.insert(card_items, cite_row)
+        else
+            table.insert(card_items, cite_col)
+        end
 
     elseif self.theme == "bookplate" then
         -- THEME 3: Vintage Bookplate (Double frame border, centered layout)
         table.insert(card_items, TextWidget:new{
             text = "“",
-            face = Font:getFace("cfont", 32),
+            face = Font:getFace("cfont", 36),
             bold = true,
             fgcolor = fg_color,
         })
@@ -258,7 +303,7 @@ function CardView:buildView()
         if self.book_author and #self.book_author > 0 then
             table.insert(card_items, VerticalSpan:new{ width = 4 })
             table.insert(card_items, TextWidget:new{
-                text = "by ".. self.book_author,
+                text = "by " .. self.book_author,
                 face = Font:getFace("cfont", 16),
                 italic = true,
                 fgcolor = dim_color,
@@ -270,9 +315,9 @@ function CardView:buildView()
         -- THEME 4: Dark Mode (Inverted OLED/e-ink nighttime appearance)
         table.insert(card_items, TextWidget:new{
             text = "“",
-            face = Font:getFace("cfont", 36),
+            face = Font:getFace("cfont", 42),
             bold = true,
-            fgcolor = fg_color,
+            fgcolor = dim_color,
         })
         table.insert(card_items, VerticalSpan:new{ width = 6 })
 
@@ -285,29 +330,54 @@ function CardView:buildView()
             alignment = "left",
         })
 
-        table.insert(card_items, VerticalSpan:new{ width = 18 })
+        table.insert(card_items, VerticalSpan:new{ width = 20 })
         table.insert(card_items, LineWidget:new{
             background = line_color,
             dimen = Geom:new{ w = content_w, h = 1 },
         })
-        table.insert(card_items, VerticalSpan:new{ width = 12 })
+        table.insert(card_items, VerticalSpan:new{ width = 16 })
 
-        table.insert(card_items, TextWidget:new{
-            text = "— ".. self.book_title,
-            face = Font:getFace("cfont", 19),
-            bold = true,
-            fgcolor = fg_color,
-            max_width = content_w,
-        })
+        local cite_items = {
+            align = "left",
+            TextWidget:new{
+                text = "— " .. self.book_title,
+                face = Font:getFace("cfont", 22),
+                bold = true,
+                fgcolor = fg_color,
+                max_width = text_col_w,
+            },
+        }
         if self.book_author and #self.book_author > 0 then
-            table.insert(card_items, VerticalSpan:new{ width = 4 })
-            table.insert(card_items, TextWidget:new{
-                text = "by ".. self.book_author,
-                face = Font:getFace("cfont", 15),
+            table.insert(cite_items, VerticalSpan:new{ width = 4 })
+            table.insert(cite_items, TextWidget:new{
+                text = "by " .. self.book_author,
+                face = Font:getFace("cfont", 17),
                 italic = true,
                 fgcolor = dim_color,
-                max_width = content_w,
+                max_width = text_col_w,
             })
+        end
+        if #meta_parts > 0 then
+            table.insert(cite_items, VerticalSpan:new{ width = 6 })
+            table.insert(cite_items, TextWidget:new{
+                text = table.concat(meta_parts, "  •  "),
+                face = Font:getFace("cfont", 13),
+                fgcolor = dim_color,
+                max_width = text_col_w,
+            })
+        end
+
+        local cite_col = VerticalGroup:new(cite_items)
+        if has_cover and framed_thumb then
+            local cite_row = HorizontalGroup:new{
+                align = "center",
+                cite_col,
+                HorizontalSpan:new{ width = 24 },
+                framed_thumb,
+            }
+            table.insert(card_items, cite_row)
+        else
+            table.insert(card_items, cite_col)
         end
     end
 
@@ -333,18 +403,19 @@ function CardView:buildView()
             padding = 0,
             margin = 0,
             card_inner,
-        } end
+        }
+    end
 
     -- Centered card presentation on screen
     local centered_card = CenterContainer:new{
-        dimen = Geom:new{ w = screen_w, h = screen_h - 90 },
+        dimen = Geom:new{ w = screen_w, h = screen_h - 70 },
         card_container,
     }
 
     -- Interactive Bottom Action Toolbar
     local theme_name = self.settings and self.settings:getThemeName(self.theme) or "Classic"
     local btn_theme = Button:new{
-        text = "".. theme_name,
+        text = theme_name,
         callback = function()
             self:onCycleTheme()
         end,
@@ -353,7 +424,7 @@ function CardView:buildView()
     }
 
     local btn_save = Button:new{
-        text = "Save",
+        text = _("Save"),
         callback = function()
             Exporter.saveCard(self, false)
         end,
@@ -362,7 +433,7 @@ function CardView:buildView()
     }
 
     local btn_wallpaper = Button:new{
-        text = "️ Wallpaper",
+        text = _("Wallpaper"),
         callback = function()
             Exporter.saveCard(self, true)
         end,
@@ -371,7 +442,7 @@ function CardView:buildView()
     }
 
     local btn_copy = Button:new{
-        text = "Copy",
+        text = _("Copy"),
         callback = function()
             self:onCopyText()
         end,
@@ -380,9 +451,9 @@ function CardView:buildView()
     }
 
     local btn_close = Button:new{
-        text = "Close",
+        text = _("Close"),
         callback = function()
-            UIManager:close(self)
+            UIManager:close(self, "ui")
         end,
         bordersize = 1,
         padding = 8,
@@ -408,7 +479,7 @@ function CardView:buildView()
         padding = 4,
         margin = 0,
         CenterContainer:new{
-            dimen = Geom:new{ w = screen_w, h = 56 },
+            dimen = Geom:new{ w = screen_w, h = 54 },
             toolbar,
         },
     }
@@ -417,7 +488,8 @@ function CardView:buildView()
         align = "center",
         centered_card,
         self.toolbar_widget,
-    } end
+    }
+end
 
 function CardView:onShow()
     UIManager:setDirty(self, function()
@@ -446,12 +518,12 @@ function CardView:onCycleTheme()
 end
 
 function CardView:onCopyText()
-    local citation = "— ".. self.book_title
+    local citation = "— " .. self.book_title
     if self.book_author and #self.book_author > 0 then
-        citation = citation .. ", by ".. self.book_author
+        citation = citation .. ", by " .. self.book_author
     end
     if self.page_str and #self.page_str > 0 then
-        citation = citation .. "(".. self.page_str .. ")"
+        citation = citation .. " (" .. self.page_str .. ")"
     end
     local full_quote = string.format("“%s”\n\n%s", self.text, citation)
 
@@ -465,17 +537,17 @@ function CardView:onCopyText()
 end
 
 function CardView:onSwipe(arg, ges)
-    UIManager:close(self)
+    UIManager:close(self, "ui")
     return true
 end
 
 function CardView:onAnyKeyPressed()
-    UIManager:close(self)
+    UIManager:close(self, "ui")
     return true
 end
 
-function CardView:onClose()
-    UIManager:setDirty(nil, "full")
+function CardView:onCloseWidget()
+    UIManager:setDirty(nil, "ui")
 end
 
 return CardView
